@@ -1,38 +1,62 @@
-<template lang="">
-  <div>
-    <!-- <app-header v-bind:프롭스 속성 이름="상위 컴포넌트의 데이터 이름"></app-header> -->
-    <app-header 
-      v-bind:propsdata="str"
-      v-on:renew="renewStr"
-    ></app-header>
+<template>
+  <div id="app">
+    <TodoHeader></TodoHeader>
+    <TodoInput v-on:addTodo="addTodo"></TodoInput>
+    <TodoList v-bind:propsdata="todoItems" @removeTodo="removeTodo"></TodoList>
+    <TodoFooter v-on:removeAll="clearAll"></TodoFooter>
   </div>
 </template>
+
 <script>
-import AppHeader from './components/AppHeader.vue';
-// new Vue({
-//   data: {
-//     str: 'hi'
-//   }
-// })
 export default {
-  // 여러개의 컴포넌트에서 동일한값을 참조하면 안되기 때문에 function으로 return
-  // data : {
-  // }
-  data: function(){
+  data() {
     return {
-      str : 'Header'
+      todoItems: []
     }
-  },
-  components: {
-    'app-header': AppHeader
   },
   methods: {
-    renewStr: function(){
-      this.str = 'hi';
+    clearAll() {
+      localStorage.clear();
+      this.todoItems = [];
+    },
+		addTodo(todoItem) {
+			localStorage.setItem(todoItem, todoItem);
+			this.todoItems.push(todoItem);
+		},
+    removeTodo(todoItem, index) {
+      localStorage.removeItem(todoItem);
+      this.todoItems.splice(index, 1);
     }
+  },
+  created() {
+		if (localStorage.length > 0) {
+			for (var i = 0; i < localStorage.length; i++) {
+				this.todoItems.push(localStorage.key(i));
+			}
+		}
+  },
+  components: {
+    'TodoHeader': TodoHeader,
+    'TodoInput': TodoInput,
+    'TodoList': TodoList,
+    'TodoFooter': TodoFooter
   }
 }
 </script>
-<style lang="">
-  
+
+<style>
+  body {
+    text-align: center;
+    background-color: #F6F6F8;
+  }
+  input {
+    border-style: groove;
+    width: 200px;
+  }
+  button {
+    border-style: groove;
+  }
+  .shadow {
+    box-shadow: 5px 10px 10px rgba(0, 0, 0, 0.03)
+  }
 </style>
